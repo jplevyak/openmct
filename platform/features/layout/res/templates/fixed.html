@@ -20,10 +20,11 @@
  at runtime from the About dialog for additional information.
 -->
 <div class="t-fixed-position l-fixed-position"
-     ng-controller="FixedController as controller">
+     ng-controller="FixedController as controller"
+     ng-click="controller.bypassSelection($event)">
 
     <!-- Background grid -->
-    <div class="l-grid-holder" ng-click="controller.clearSelection()">
+    <div class="l-grid-holder" ng-click="controller.bypassSelection($event)">
         <div class="l-grid l-grid-x"
              ng-if="!controller.getGridSize()[0] < 3"
              ng-style="{ 'background-size': controller.getGridSize() [0] + 'px 100%' }"></div>
@@ -34,8 +35,9 @@
 
     <!-- Fixed position elements -->
     <div ng-repeat="element in controller.getElements()"
-         class="l-fixed-position-item s-selectable s-moveable s-hover-border"
+         class="l-fixed-position-item s-selectable s-moveable s-hover-border {{element.id + '-' + $id}}"
          ng-style="element.style"
+         ng-init="controller.selectIfNew(element.id + '-' + $id, element)"
          mct-selectable="controller.getContext(element)">
         <mct-include key="element.template"
                      parameters="{ gridSize: controller.getGridSize() }"
@@ -47,7 +49,7 @@
         <div class="l-fixed-position-item t-edit-handle-holder"
              mct-drag-down="controller.moveHandle().startDrag()"
              mct-drag="controller.moveHandle().continueDrag(delta)"
-             mct-drag-up="controller.moveHandle().endDrag()"
+             mct-drag-up="controller.endDrag()"
              ng-style="controller.getSelectedElementStyle()">
         </div>
         <div ng-repeat="handle in controller.handles()"
@@ -55,7 +57,7 @@
              ng-style="handle.style()"
              mct-drag-down="handle.startDrag()"
              mct-drag="handle.continueDrag(delta)"
-             mct-drag-up="handle.endDrag()">
+             mct-drag-up="controller.endDrag(handle)">
         </div>
     </span>
 </div>
