@@ -20,8 +20,7 @@
  at runtime from the About dialog for additional information.
 -->
 <div class="t-fixed-position l-fixed-position"
-     ng-controller="FixedController as controller"
-     ng-click="controller.bypassSelection($event)">
+     ng-controller="FixedController as controller">
 
     <!-- Background grid -->
     <div class="l-grid-holder" ng-click="controller.bypassSelection($event)">
@@ -35,10 +34,10 @@
 
     <!-- Fixed position elements -->
     <div ng-repeat="element in controller.getElements()"
-         class="l-fixed-position-item s-selectable s-moveable s-hover-border {{element.id + '-' + $id}}"
+         class="l-fixed-position-item s-selectable s-moveable s-hover-border"
          ng-style="element.style"
-         ng-init="controller.selectIfNew(element.id + '-' + $id, element)"
-         mct-selectable="controller.getContext(element)">
+         mct-selectable="controller.getContext(element)"
+         mct-init-select="controller.isSelected(element)">
         <mct-include key="element.template"
                      parameters="{ gridSize: controller.getGridSize() }"
                      ng-model="element">

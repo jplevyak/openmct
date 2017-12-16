@@ -60,6 +60,7 @@ define(
             this.$q = $q;
             this.dialogService = dialogService;
             this.gridSize = $scope.domainObject && $scope.domainObject.getModel().layoutGrid;
+            this.fixedViewSelectable = false;
 
             var self = this;
             [
@@ -144,23 +145,17 @@ define(
             // Decorate elements in the current configuration
             function refreshElements() {
                 if (!self.dragInProgress) {
-                    // Cache selection; we are instantiating new proxies
-                    // so we may want to restore this.
                     var selection = self.openmct.selection.get()[0],
                         elements = (($scope.configuration || {}).elements || []);
 
                     // Create the new proxies...
                     self.elementProxies = elements.map(makeProxyElement);
 
-                    // Find the selection in the new array
-                    // if (selection !== undefined) {
-                        // check if elementProxy exists
-                        // var index = elements.indexOf(selection.context.elementProxy.element);
-                        // if (index > -1) {
-                            // selection.context.elementProxy = self.elementProxies[index];
-                            // self.openmct.selection.select(selection);
-                        // }
-                    // }
+                    // If selection is not in array, select parent.
+                    if (selection && selection.context.elementProxy &&
+                        elements.indexOf(selection.context.elementProxy.element) === -1) {
+                        self.$element[0].click();
+                    }
 
                     // Finally, rebuild lists of elements by id to
                     // facilitate faster update when new telemetry comes in.
@@ -186,7 +181,6 @@ define(
                     configuration.elements = configuration.elements.filter(function (proxy) {
                         return ids.indexOf(proxy.id) === -1;
                     });
-                    // self.$element[0].click();
                 }
                 self.getTelemetry($scope.domainObject);
                 refreshElements();
@@ -230,13 +224,12 @@ define(
                     $scope.configuration.elements || [];
                 // Store the position of this element.
                 $scope.configuration.elements.push(element);
+
+                self.droppedElementToSelectAfterRefresh = element;
+
                 // Refresh displayed elements
                 refreshElements();
-                // TODO:
-                // Select the newly-added element                
-                self.select(
-                    self.elementProxies[self.elementProxies.length - 1]
-                );
+
                 // Mark change as persistable
                 if ($scope.commit) {
                     $scope.commit("Dropped an element.");
@@ -250,9 +243,6 @@ define(
                 if (e.defaultPrevented) {
                     return;
                 }
-
-                // Store the id so that the newly-dropped object gets selected later
-                self.droppedIdToSelectAfterRefresh = id;
 
                 e.preventDefault();
                 // Store the position of this element.
@@ -276,19 +266,24 @@ define(
             function setSelection(selectable) {
                 var selection = selectable[0];
 
-                if (selection.context.oldItem) {
-                    if (!self.fixedViewSelected) {
-                        self.fixedViewSelected = true;
-                        self.resizeHandles = [];
-                        self.mvHandle = undefined;
-                        selection.context.proxy = new FixedProxy(addElement, $q, dialogService);
-                        self.openmct.selection.select(selection);
-                    }
-                } else {
+                if (selection.context.elementProxy) {
                     var element = selection.context.elementProxy;
                     self.mvHandle = self.generateDragHandle(element);
                     self.resizeHandles = self.generateDragHandles(element);
-                    self.fixedViewSelected = false;
+                } else {
+                    if (!self.fixedViewSelectable) {
+                        self.fixedViewSelectable = true;
+                        selection.context.proxy = new FixedProxy(addElement, $q, dialogService);
+                        self.openmct.selection.select(selection);
+                        // self.openmct.selection.selectable(
+                        //     self.$element[0],
+                        //     selection.context,
+                        //     true
+                        // );
+                    }
+
+                    self.resizeHandles = [];
+                    self.mvHandle = undefined;
                 }
             }
 
@@ -323,6 +318,8 @@ define(
             this.openmct.time.on("bounds", updateDisplayBounds);
 
             this.openmct.selection.on('change', setSelection);
+            this.$element.on('click', this.bypassSelection.bind(this));
+            window.fixed = this;
         }
 
         /**
@@ -512,12 +509,21 @@ define(
             return this.elementProxies;
         };
 
-        /**
+        FixedController.prototype.isSelected = function (elementProxy) {
+            if (elementProxy.element === this.droppedElementToSelectAfterRefresh) {
+                delete this.droppedElementToSelectAfterRefresh;
+                return true;
+            } else {
+                return false;
+            }
+        };
+
+         /**
          * Check if the element is currently selected, or (if no
-         * argument is supplied) get the currently selected element.
+         * argument is supplied) check if an element proxy is selected.
          * @returns {boolean} true if selected
-         */         
-        FixedController.prototype.selected = function (element) {
+         */
+        FixedController.prototype.selected = function () {
             var selection = this.openmct.selection.get()[0];
             return (selection && selection.context.elementProxy) ? true : false;
         };
@@ -581,21 +587,6 @@ define(
                 handle.endDrag();
             } else {
                 this.moveHandle().endDrag();
-            }
-        };
-
-         /**
-         * Selects a newly-dropped object.
-         *
-         * @param classSelector the css class selector
-         * @param element a proxy element
-         */
-        FixedController.prototype.selectIfNew = function (selector, element) {
-            if (element.id && element.id === this.droppedIdToSelectAfterRefresh) {
-                setTimeout(function () {
-                    $('.' + selector)[0].click();
-                    delete this.droppedIdToSelectAfterRefresh;
-                }.bind(this), 0);
             }
         };
 
