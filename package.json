@@ -14,8 +14,10 @@
     "d3-time": "^1.0.4",
     "d3-time-format": "^2.0.3",
     "express": "^4.13.1",
+    "express-ws": "^3.0.0",
     "minimist": "^1.1.1",
-    "request": "^2.69.0"
+    "request": "^2.69.0",
+    "ws": "^2.0.3"
   },
   "devDependencies": {
     "bower": "^1.7.7",
@@ -52,14 +54,14 @@
     "split": "^1.0.0"
   },
   "scripts": {
-    "start": "node app.js",
+    "start": "node app.js -p 80",
     "test": "karma start --single-run",
     "jshint": "jshint platform example",
     "watch": "karma start",
     "jsdoc": "jsdoc -c jsdoc.json -R API.md -r -d dist/docs/api",
     "otherdoc": "node docs/gendocs.js --in docs/src --out dist/docs --suppress-toc 'docs/src/index.md|docs/src/process/index.md'",
     "docs": "npm run jsdoc ; npm run otherdoc",
-    "prepublish": "node ./node_modules/bower/bin/bower install && node ./node_modules/gulp/bin/gulp.js install"
+    "prepublish": "node ./node_modules/bower/bin/bower --allow-root install && node ./node_modules/gulp/bin/gulp.js install"
   },
   "repository": {
     "type": "git",

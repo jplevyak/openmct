@@ -25,8 +25,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title></title>
-    <script src="bower_components/requirejs/require.js">
-    </script>
+    <script src="lib/http.js"></script>
+    <script src="bower_components/requirejs/require.js"></script>
+    <script src="dictionary-plugin.js"></script>
+    <script src="historical-telemetry-plugin.js"></script>
+    <script src="realtime-telemetry-plugin.js"></script>
     <script>
         var THIRTY_MINUTES = 30 * 60 * 1000;
 
@@ -44,6 +47,8 @@
             openmct.install(openmct.plugins.ExampleImagery());
             openmct.install(openmct.plugins.UTCTimeSystem());
             openmct.install(openmct.plugins.ImportExport());
+	    openmct.install(HistoricalTelemetryPlugin());
+	    openmct.install(RealtimeTelemetryPlugin());
             openmct.install(openmct.plugins.Conductor({
                 menuOptions: [
                     {
@@ -65,6 +70,7 @@
                     }
                 ]
             }));
+            openmct.install(DictionaryPlugin());
             openmct.time.clock('local', {start: -THIRTY_MINUTES, end: 0});
             openmct.time.timeSystem('utc');
             openmct.start();

@@ -17,6 +17,19 @@
         fs = require('fs'),
         request = require('request');
 
+    var expressWs = require('express-ws');
+    expressWs(app);
+
+    var Spacecraft = require('./spacecraft');
+    var RealtimeServer = require('./realtime-server');
+    var HistoryServer = require('./history-server');
+    var StaticServer = require('./static-server');
+
+    var spacecraft = new Spacecraft();
+    var realtimeServer = new RealtimeServer(spacecraft);
+    var historyServer = new HistoryServer(spacecraft);
+    var staticServer = new StaticServer();
+
     // Defaults
     options.port = options.port || options.p || 8080;
     options.directory = options.directory || options.D || '.';
@@ -76,6 +89,9 @@
 
     // Expose everything else as static files
     app.use(express['static'](options.directory));
+
+    app.use('/realtime', realtimeServer);
+    app.use('/history', historyServer);
 
     // Finally, open the HTTP server and log the instance to the console
     app.listen(options.port, function() {
