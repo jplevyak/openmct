@@ -18,6 +18,7 @@
     "minimist": "^1.1.1",
     "request": "^2.69.0",
     "ws": "^2.0.3"
+    "vue": "^2.5.6"
   },
   "devDependencies": {
     "bower": "^1.7.7",

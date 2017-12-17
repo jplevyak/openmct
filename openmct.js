@@ -33,10 +33,11 @@ requirejs.config({
         "moment": "bower_components/moment/moment",
         "moment-duration-format": "bower_components/moment-duration-format/lib/moment-duration-format",
         "moment-timezone": "bower_components/moment-timezone/builds/moment-timezone-with-data",
-        "saveAs": "bower_components/FileSaver.js/FileSaver.min",
+        "saveAs": "bower_components/file-saver/FileSaver.min",
         "screenfull": "bower_components/screenfull/dist/screenfull.min",
         "text": "bower_components/text/text",
         "uuid": "bower_components/node-uuid/uuid",
+        "vue": "node_modules/vue/dist/vue.min",
         "zepto": "bower_components/zepto/zepto.min",
         "lodash": "bower_components/lodash/lodash",
         "d3-selection": "node_modules/d3-selection/build/d3-selection.min",
@@ -65,6 +66,9 @@ requirejs.config({
         },
         "moment-duration-format": {
             "deps": ["moment"]
+        },
+        "saveAs": {
+            "exports": "saveAs"
         },
         "screenfull": {
             "exports": "screenfull"
