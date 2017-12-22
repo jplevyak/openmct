@@ -24,11 +24,13 @@
     var RealtimeServer = require('./realtime-server');
     var HistoryServer = require('./history-server');
     var StaticServer = require('./static-server');
+    var PutDataServer = require('./put-data-server');
 
     var spacecraft = new Spacecraft();
     var realtimeServer = new RealtimeServer(spacecraft);
     var historyServer = new HistoryServer(spacecraft);
     var staticServer = new StaticServer();
+    var putDataServer = new PutDataServer();
 
     // Defaults
     options.port = options.port || options.p || 8080;
@@ -92,6 +94,7 @@
 
     app.use('/realtime', realtimeServer);
     app.use('/history', historyServer);
+    app.use('/putdata', putDataServer);
 
     // Finally, open the HTTP server and log the instance to the console
     app.listen(options.port, function() {

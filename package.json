@@ -3,6 +3,7 @@
   "version": "0.12.1-SNAPSHOT",
   "description": "The Open MCT core platform",
   "dependencies": {
+    "body-parser-json": "^1.9.2",
     "d3-array": "^1.0.2",
     "d3-axis": "^1.0.4",
     "d3-collection": "^1.0.2",
@@ -16,9 +17,10 @@
     "express": "^4.13.1",
     "express-ws": "^3.0.0",
     "minimist": "^1.1.1",
+    "nano": "^6.4.2",
     "request": "^2.69.0",
+    "vue": "^2.5.6",
     "ws": "^2.0.3"
-    "vue": "^2.5.6"
   },
   "devDependencies": {
     "bower": "^1.7.7",
